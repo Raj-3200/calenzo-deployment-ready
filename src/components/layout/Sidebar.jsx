@@ -55,9 +55,6 @@ export default function Sidebar() {
 
   async function logout() {
     await logoutAdmin()
-    localStorage.removeItem('calenzo_auth')
-    localStorage.removeItem('calenzo_role')
-    localStorage.removeItem('calenzo_user')
     navigate('/admin/login')
   }
 

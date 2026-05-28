@@ -19,7 +19,7 @@ export function AuthControls() {
   if (isSignedIn) {
     return (
       <div className="flex items-center gap-2">
-        <Button href="/patient/dashboard" variant="secondary" size="sm">
+        <Button href="/dashboard" variant="secondary" size="sm">
           <CalendarCheck2 className="h-4 w-4" />
           My visits
         </Button>
@@ -30,11 +30,11 @@ export function AuthControls() {
 
   return (
     <div className="flex items-center gap-2">
-      <Button href="/sign-in" variant="secondary" size="sm">
+      <Button href="/patient/login" variant="secondary" size="sm">
         <LogIn className="h-4 w-4" />
         Sign in
       </Button>
-      <Button href="/sign-up" size="sm">
+      <Button href="/patient/register" size="sm">
         <UserPlus className="h-4 w-4" />
         Sign up
       </Button>

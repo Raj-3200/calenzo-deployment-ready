@@ -1,6 +1,5 @@
 'use server'
 
-import bcrypt from 'bcryptjs'
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
@@ -14,6 +13,7 @@ import {
   appointmentDuration,
   generateAvailableSlots,
   getClinic,
+  getPatientForUser,
   getPatientByPhone,
 } from '@/lib/data'
 import {
@@ -62,6 +62,12 @@ const bookingSchema = z.object({
     email: z.string().email().optional().or(z.literal('')),
   }).optional(),
 })
+
+function safeRedirectPath(value, fallback = '/patient/dashboard') {
+  const path = String(value || '').trim()
+  if (!path.startsWith('/') || path.startsWith('//')) return fallback
+  return path
+}
 
 async function requireAdmin() {
   const session = await getSession()
@@ -355,9 +361,10 @@ async function upsertPatient(tx, clinicId, patientData, userId = null, existingP
 export async function savePatientProfileAction(formData) {
   'use server'
   const session = await getSession()
-  if (!session?.user?.id) redirect('/sign-in')
+  if (!session?.user?.id) redirect('/patient/login')
 
   const raw = Object.fromEntries(formData)
+  const redirectTo = safeRedirectPath(raw.redirectTo)
   const parsed = profileSchema.safeParse(raw)
   if (!parsed.success) {
     const msg = encodeURIComponent(parsed.error.issues[0]?.message || 'Please check your details.')
@@ -378,10 +385,15 @@ export async function savePatientProfileAction(formData) {
         },
       })
 
+      const email = String(session.user.email || '').trim().toLowerCase()
       const existing = await tx.patient.findFirst({
         where: {
           clinicId: clinic.id,
-          OR: [{ userId: session.user.id }, { phone: values.phone }],
+          OR: [
+            { userId: session.user.id },
+            { phone: values.phone },
+            ...(email ? [{ email: { equals: email, mode: 'insensitive' } }] : []),
+          ],
         },
       })
 
@@ -392,7 +404,7 @@ export async function savePatientProfileAction(formData) {
         age: values.age,
         gender: values.gender,
         phone: values.phone,
-        email: session.user.email,
+        email,
         address: values.address || null,
         emergencyContact: values.emergencyContact || null,
         securityQuestion: null,
@@ -405,14 +417,14 @@ export async function savePatientProfileAction(formData) {
         await tx.patient.create({ data })
       }
     }, TRANSACTION_OPTIONS)
-  } catch (err) {
+  } catch {
     const msg = encodeURIComponent('Failed to save profile. Please try again.')
     redirect(`/patient/profile?error=${msg}`)
   }
 
   revalidatePath('/patient/dashboard')
   revalidatePath('/patient/profile')
-  redirect('/patient/dashboard')
+  redirect(redirectTo)
 }
 
 export async function lookupPatientAction(phone) {
@@ -442,7 +454,7 @@ export async function createBookingAction(payload) {
   const parsed = bookingSchema.safeParse(payload)
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message || 'Please check booking details.' }
 
-  const existingPatient = await prisma.patient.findUnique({ where: { userId: session.user.id } })
+  const existingPatient = await getPatientForUser(session.user)
   const patientData = parsed.data.patient || existingPatient
 
   if (!patientData) {

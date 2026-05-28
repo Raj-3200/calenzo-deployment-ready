@@ -1,27 +1,24 @@
-import { neon } from '@neondatabase/serverless'
+import { PrismaClient } from '@prisma/client'
 import { loadLocalEnv } from './load-local-env.mjs'
 
 await loadLocalEnv()
 
-const databaseUrl = process.env.DATABASE_URL || process.env.POSTGRES_URL
+const prisma = new PrismaClient()
 
-if (!databaseUrl) {
-  console.error('DATABASE_URL is not configured.')
-  process.exit(1)
+try {
+  await prisma.$connect()
+  console.log(JSON.stringify({
+    ok: true,
+    provider: 'prisma',
+    databaseConfigured: Boolean(process.env.DATABASE_URL),
+  }, null, 2))
+} catch (error) {
+  console.error(JSON.stringify({
+    ok: false,
+    provider: 'prisma',
+    error: error?.message || 'Database connection failed',
+  }, null, 2))
+  process.exitCode = 1
+} finally {
+  await prisma.$disconnect()
 }
-
-const sql = neon(databaseUrl)
-const [row] = await sql`
-  select
-    now() as now,
-    current_database() as database_name,
-    current_user as database_user
-`
-
-console.log(JSON.stringify({
-  ok: true,
-  provider: 'neon',
-  database: row.database_name,
-  user: row.database_user,
-  now: row.now,
-}, null, 2))

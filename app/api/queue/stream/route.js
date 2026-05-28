@@ -63,8 +63,8 @@ export async function GET(request) {
         void push()
       })
       const timer = setInterval(() => {
-        if (active) controller.enqueue(encoder.encode(': ping\n\n'))
-      }, 15000)
+        void push()
+      }, 30000)
 
       cleanup = () => {
         active = false

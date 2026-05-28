@@ -1,21 +1,22 @@
 import { redirect } from 'next/navigation'
 import { CalendarCheck2, Clock, Ticket } from 'lucide-react'
-import { getSession, isAdminRole } from '@/lib/auth'
+import { getSession } from '@/lib/auth'
+import { getPatientForUser } from '@/lib/data'
 import { prisma } from '@/lib/prisma'
 import { formatDate, formatTime } from '@/lib/time'
+import { AIAssistant } from '@/components/AIAssistant'
+import { PatientTopbar } from '@/components/PatientTopbar'
 import { Button, Card, EmptyState, PageHeader, StatusBadge } from '@/components/ui'
 
 export default async function PatientDashboardPage() {
   const session = await getSession()
-  if (!session?.user?.id) redirect('/sign-in')
+  if (!session?.user?.id) redirect('/patient/login')
 
-  // Admins who land here get redirected to admin dashboard
-  if (isAdminRole(session.user.role)) {
-    redirect('/admin')
-  }
+  const linkedPatient = await getPatientForUser(session.user)
+  if (!linkedPatient) redirect('/patient/profile')
 
   const patient = await prisma.patient.findUnique({
-    where: { userId: session.user.id },
+    where: { id: linkedPatient.id },
     include: {
       appointments: {
         include: { service: true },
@@ -29,12 +30,18 @@ export default async function PatientDashboardPage() {
 
   return (
     <main className="min-h-screen px-4 py-8">
+      <PatientTopbar />
       <div className="mx-auto max-w-6xl">
         <PageHeader
           eyebrow="Patient dashboard"
           title={`Hello, ${patient.fullName}`}
           description="Your saved details, appointment history, tickets, and live queue links stay together here."
-          action={<Button href="/book">Book appointment</Button>}
+          action={
+            <div className="flex flex-col gap-2 sm:flex-row">
+              <Button href="/book">Book appointment</Button>
+              <AIAssistant />
+            </div>
+          }
         />
         <div className="grid gap-4 md:grid-cols-3">
           <Card><CalendarCheck2 className="mb-4 h-5 w-5 text-sky-200" /><p className="text-sm text-slate-400">Total visits</p><p className="mt-1 text-3xl font-bold text-white">{patient.totalVisits}</p></Card>

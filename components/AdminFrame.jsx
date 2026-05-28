@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { BarChart3, Bell, CalendarDays, Clock, LayoutDashboard, ListChecks, Settings, Stethoscope, UserPlus, Users, Workflow } from 'lucide-react'
 import { Button, cn } from '@/components/ui'
-import { SignOutButton } from '@/components/SignOutButton'
+import { AdminSignOutButton } from '@/components/AdminSignOutButton'
 
 const navItems = [
   ['Dashboard', '/admin', LayoutDashboard],
@@ -65,7 +65,7 @@ export function AdminFrame({ children, user }) {
           </div>
           <div className="flex items-center gap-2">
             <Button href="/" variant="ghost" size="sm">Public site</Button>
-            <SignOutButton />
+            <AdminSignOutButton />
           </div>
         </header>
         <main className="px-4 py-6 md:px-8">{children}</main>

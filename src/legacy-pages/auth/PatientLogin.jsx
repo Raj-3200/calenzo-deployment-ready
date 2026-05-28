@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { LockKeyhole, Phone } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Button, Input } from '../../components/common/UI'
 import { AuthShell } from './AdminLogin'
 
 export default function PatientLogin() {
-  const navigate = useNavigate()
   const [phone, setPhone] = useState('+91 98765 43210')
   const [answer, setAnswer] = useState('3210')
 
@@ -16,9 +15,8 @@ export default function PatientLogin() {
       toast.error('Please enter phone number and security answer')
       return
     }
-    localStorage.setItem('calenzo_patient_auth', 'true')
-    toast.success('Welcome back')
-    navigate('/patient')
+    toast.success('Continue with Clerk sign-in')
+    window.location.assign('/patient/login')
   }
 
   return (

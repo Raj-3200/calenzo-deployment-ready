@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { Activity, LockKeyhole, Mail } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Badge, Button, Card, Input } from '../../components/common/UI'
 import { loginAdmin } from '../../lib/authApi'
 
 export default function AdminLogin() {
-  const navigate = useNavigate()
   const [email, setEmail] = useState('admin@calenzo.health')
   const [password, setPassword] = useState('calenzo-demo')
   const [loading, setLoading] = useState(false)
@@ -16,22 +15,12 @@ export default function AdminLogin() {
     setLoading(true)
 
     try {
-      const { user } = await loginAdmin(email, password)
-      localStorage.setItem('calenzo_auth', 'true')
-      localStorage.setItem('calenzo_role', user.role)
-      localStorage.setItem('calenzo_user', JSON.stringify(user))
-      toast.success('Welcome to Calenzo command center')
-      navigate('/admin')
+      await loginAdmin(email, password)
+      toast.success('Continue with Clerk sign-in')
+      window.location.assign('/admin/login')
     } catch (error) {
-      const demoAllowed = email === 'admin@calenzo.health' && password === 'calenzo-demo'
-      if (demoAllowed) {
-        localStorage.setItem('calenzo_auth', 'true')
-        localStorage.setItem('calenzo_role', 'owner')
-        toast.success('Demo mode active. Use Vercel dev or deployment for server sessions.')
-        navigate('/admin')
-      } else {
-        toast.error(error.message || 'Login failed')
-      }
+      toast.error(error.message || 'Use Clerk sign-in')
+      window.location.assign('/admin/login')
     } finally {
       setLoading(false)
     }
@@ -47,7 +36,7 @@ export default function AdminLogin() {
         </Button>
       </form>
       <p className="mt-5 text-center text-xs leading-5 text-slate-500">
-        Production login uses Neon-backed server sessions with an HTTP-only cookie.
+        Production login is handled by Clerk.
       </p>
     </AuthShell>
   )

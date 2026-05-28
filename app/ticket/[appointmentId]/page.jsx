@@ -4,6 +4,7 @@ import { prisma } from '@/lib/prisma'
 import { formatDate, formatTime } from '@/lib/time'
 import { isDatabaseUuid } from '@/lib/validation'
 import { confirmationMessage, whatsappLink } from '@/lib/whatsapp'
+import { PatientTopbar } from '@/components/PatientTopbar'
 import { Button, Card, PageHeader, StatusBadge } from '@/components/ui'
 import { PrintButton } from '@/components/PrintButton'
 
@@ -26,6 +27,7 @@ export default async function TicketPage({ params }) {
 
   return (
     <main className="min-h-screen px-4 py-8">
+      <PatientTopbar />
       <div className="mx-auto max-w-5xl">
         <PageHeader
           eyebrow="Appointment confirmed"

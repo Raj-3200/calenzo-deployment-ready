@@ -13,7 +13,7 @@ export default async function ServicesPage() {
           eyebrow="Clinic services"
           title="Simple appointment choices"
           description="Patients choose a service, appointment type, date, and slot. Calenzo handles duration, lunch break, duplicate slot prevention, tokens, and live queue."
-          action={<Button href="/sign-in">Book appointment</Button>}
+          action={<Button href="/patient/login">Book appointment</Button>}
         />
         <div className="grid gap-4 md:grid-cols-2">
           {services.map((service) => (

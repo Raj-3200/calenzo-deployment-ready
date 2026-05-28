@@ -18,7 +18,7 @@ function SubmitButton({ isEdit }) {
   )
 }
 
-export function PatientProfileForm({ action, email, defaultValues, error, isEdit }) {
+export function PatientProfileForm({ action, email, defaultValues, error, isEdit, redirectTo }) {
   return (
     <div className="mx-auto w-full max-w-2xl">
       {/* Header */}
@@ -45,6 +45,7 @@ export function PatientProfileForm({ action, email, defaultValues, error, isEdit
       <form action={action} className="space-y-5">
         {/* Hidden email */}
         <input type="hidden" name="emailHidden" value={email || ''} />
+        {redirectTo ? <input type="hidden" name="redirectTo" value={redirectTo} /> : null}
 
         {/* Row 1: Full name + Age */}
         <div className="grid gap-4 sm:grid-cols-2">

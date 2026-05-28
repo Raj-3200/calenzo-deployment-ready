@@ -1,12 +1,11 @@
 import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import { HelpCircle, Mail, Phone, UserRound } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { Button, Input } from '../../components/common/UI'
 import { AuthShell } from './AdminLogin'
 
 export default function PatientRegister() {
-  const navigate = useNavigate()
   const [form, setForm] = useState({
     full_name: '',
     phone: '',
@@ -21,9 +20,8 @@ export default function PatientRegister() {
       toast.error('Please complete required fields')
       return
     }
-    localStorage.setItem('calenzo_patient_auth', 'true')
-    toast.success('Patient access created')
-    navigate('/patient')
+    toast.success('Continue with Clerk sign-up')
+    window.location.assign('/patient/register')
   }
 
   return (

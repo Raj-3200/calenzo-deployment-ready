@@ -1,15 +1,27 @@
 export async function loginAdmin(email, password) {
-  void email
-  void password
-  throw new Error('Use Clerk sign-in at /admin/login.')
+  const response = await fetch("/api/admin/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const data = await response.json();
+  if (!response.ok || !data.ok) {
+    throw new Error(data.error || "Invalid admin credentials.");
+  }
+
+  window.location.assign("/admin");
 }
 
 export async function getAdminSession() {
-  return { ok: false, user: null, expires_at: null }
+  const response = await fetch("/api/admin/session", { cache: "no-store" });
+  if (!response.ok) return { ok: false, user: null, expires_at: null };
+  return await response.json();
 }
 
 export async function logoutAdmin() {
-  if (typeof window !== 'undefined') {
-    window.location.assign('/')
+  await fetch("/api/admin/logout", { method: "POST" });
+  if (typeof window !== "undefined") {
+    window.location.assign("/");
   }
 }

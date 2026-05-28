@@ -14,7 +14,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en" data-scroll-behavior="smooth">
       <body>
-        <ClerkProvider>
+        <ClerkProvider dynamic>
           <Providers>{children}</Providers>
         </ClerkProvider>
       </body>

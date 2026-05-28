@@ -1,218 +1,134 @@
-# Calenzo — Clinic Appointment & Queue Management System
+# Calenzo
 
-A production-ready clinic management system built with Next.js 16, Clerk authentication, Prisma ORM, and PostgreSQL (Neon).
-
----
-
-## Features
-
-- ✅ Clerk authentication (sign-in, sign-up, sign-out)
-- ✅ Role-based access (Admin, Doctor, Receptionist, Patient)
-- ✅ Patient registration & profile management
-- ✅ Multi-step appointment booking flow
-- ✅ Real-time queue with PostgreSQL LISTEN/NOTIFY + Server-Sent Events
-- ✅ Admin dashboard with live database stats
-- ✅ Queue management (arrived, start, complete, skip, recall, cancel)
-- ✅ Walk-in booking
-- ✅ Follow-up management
-- ✅ WhatsApp quick action links
-- ✅ Analytics with Recharts
-- ✅ Clinic settings management
-- ✅ Dark premium UI with Tailwind CSS
-
----
+Calenzo is a premium clinic operations platform for appointment booking, patient profiles, live queue tracking, walk-ins, follow-ups, WhatsApp-ready communication, analytics, and AI-assisted booking.
 
 ## Tech Stack
 
-| Layer | Technology |
-|-------|-----------|
-| Framework | Next.js 16 (App Router) |
-| Auth | Clerk v7 |
-| Database | PostgreSQL (Neon) |
-| ORM | Prisma v6 |
-| Styling | Tailwind CSS v4 |
-| Charts | Recharts |
-| Animations | Framer Motion |
-| Icons | Lucide React |
-| Validation | Zod |
+- Next.js 16 App Router, React 19
+- Tailwind CSS, Framer Motion, Lucide React, Recharts
+- Prisma ORM with PostgreSQL or Neon PostgreSQL
+- Clerk for patient authentication
+- Local Prisma-backed admin password session for clinic staff
+- PostgreSQL LISTEN/NOTIFY plus SSE with polling fallback for queue updates
+- Gemini API for the server-side AI assistant
 
----
+## Features
 
-## Quick Start
+- Patient sign-up/sign-in with Clerk
+- Patient profile creation, persistence, and edit flow
+- Existing patient profile recovery by Clerk user and email
+- Real slot generation with appointment duration, lunch break, and duplicate prevention
+- Real appointment, token, queue item, notification, and audit writes
+- Patient ticket and live queue pages
+- Local admin dashboard, queue controls, walk-ins, appointments, patients, follow-ups, services, notifications, analytics, and settings
+- WhatsApp quick links from appointment, ticket, notification, and follow-up flows
+- AI assistant with English, Hindi, and Marathi language selection
+- Server-side Gemini integration through `/api/ai/chat`
 
-### 1. Clone and install
+## Environment Variables
 
-```bash
-git clone <repo-url>
-cd calenzo
-npm install
-```
-
-### 2. Set up environment variables
-
-Copy `.env.example` to `.env.local` and fill in:
-
-```bash
-cp .env.example .env.local
-```
-
-Required variables:
+Copy `.env.example` to `.env.local` and fill in real values:
 
 ```env
-# Database (Neon PostgreSQL)
-DATABASE_URL=postgresql://...
-DIRECT_URL=postgresql://...      # Non-pooled URL for migrations
+DATABASE_URL=
+DIRECT_URL=
 
-# Clerk Authentication
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
-NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
+NEXT_PUBLIC_CLERK_SIGN_IN_URL=/patient/login
+NEXT_PUBLIC_CLERK_SIGN_UP_URL=/patient/register
 NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/patient/dashboard
 NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/patient/profile
+CLERK_WEBHOOK_SIGNING_SECRET=
 
-# App
-DEFAULT_CLINIC_ID=00000000-0000-0000-0000-000000000001
 NEXT_PUBLIC_APP_URL=http://localhost:3000
+DEFAULT_CLINIC_ID=00000000-0000-0000-0000-000000000001
+
+ADMIN_EMAIL=admin@calenzo.health
+ADMIN_PASSWORD=Admin1234!
+ADMIN_ROLE=OWNER
+
+GEMINI_API_KEY=
 ```
 
-### 3. Set up database
+Do not expose `CLERK_SECRET_KEY` or `GEMINI_API_KEY` to the browser.
+
+## Local Setup
 
 ```bash
-# Push schema to database
+npm install
 npm run db:push
-
-# Seed with default clinic data and services
 npm run db:seed
-```
-
-### 4. Run development server
-
-```bash
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000).
+Open `http://localhost:3000`.
 
----
+## Admin Setup
 
-## Role-Based Access
+Admin sign-in is intentionally local DB/password based at `/admin/login`.
 
-| Role | Access |
-|------|--------|
-| `PATIENT` | `/book`, `/patient/dashboard`, `/queue`, `/ticket` |
-| `ADMIN` / `OWNER` | All admin routes at `/admin/*` |
-| `DOCTOR` | All admin routes at `/admin/*` |
-| `RECEPTIONIST` | All admin routes at `/admin/*` |
+Default seeded credentials:
 
-### Setting a user as Admin
-
-1. Go to your [Clerk Dashboard](https://dashboard.clerk.com)
-2. Find the user → **Public metadata**
-3. Set: `{ "role": "ADMIN" }`
-4. The user will get admin access on next sign-in
-
-Alternatively, update the database directly:
-```sql
-UPDATE auth_users SET role = 'ADMIN' WHERE email = 'admin@yourdomain.com';
+```text
+User: admin@calenzo.health
+Password: Admin1234!
 ```
 
----
-
-## User Flows
-
-### New Patient
-1. Visit `/` → Click **"Yes, Create Account"**
-2. Sign up at `/sign-up` (email OTP or Google)
-3. Complete profile at `/patient/profile`
-4. Book appointment at `/book`
-5. View ticket at `/ticket/[id]`
-6. Track queue at `/queue/[id]`
-
-### Existing Patient
-1. Visit `/` → Click **"No, Existing Patient"**
-2. Sign in at `/sign-in`
-3. Redirected to `/patient/dashboard`
-4. Book new appointment at `/book`
-
-### Admin
-1. Sign in at `/sign-in`
-2. Automatically redirected to `/admin` (if admin role)
-3. Access full clinic management dashboard
-
----
-
-## Database Scripts
+Create or reset an admin:
 
 ```bash
-npm run db:push       # Push schema changes
-npm run db:seed       # Seed default data
-npm run db:migrate    # Run migrations (production)
-npm run db:health     # Check database connection
+npm run admin:create -- --email admin@calenzo.health --password "Admin1234!" --role OWNER
 ```
 
----
+Supported admin roles are `OWNER`, `ADMIN`, `DOCTOR`, `RECEPTIONIST`, and `STAFF`.
 
-## Production Deployment (Vercel)
+## Clerk Setup
 
-1. Push to GitHub
-2. Connect repo to Vercel
-3. Set all environment variables in Vercel dashboard
-4. Deploy
+Patient auth uses Clerk. Configure these in Clerk and Vercel:
 
-The `npm run build` script automatically runs `prisma generate` before building.
+- Sign-in URL: `/patient/login`
+- Sign-up URL: `/patient/register`
+- After sign-in URL: `/patient/dashboard`
+- After sign-up URL: `/patient/profile`
 
----
+Create a Clerk webhook pointing to:
 
-## Architecture
-
+```text
+https://your-domain.com/api/webhooks/clerk
 ```
-app/
-├── (public pages)
-│   ├── page.jsx              # Homepage
-│   ├── services/             # Clinic services
-│   ├── contact/              # Contact info
-│   ├── sign-in/              # Clerk SignIn component
-│   ├── sign-up/              # Clerk SignUp component
-│   ├── queue/[id]/           # Patient live queue
-│   └── ticket/[id]/          # Appointment ticket
-├── admin/
-│   ├── (protected)/          # Admin routes (role-gated)
-│   │   ├── page.jsx          # Dashboard
-│   │   ├── appointments/     # Appointment management
-│   │   ├── queue/            # Live queue control
-│   │   ├── walk-ins/         # Walk-in booking
-│   │   ├── patients/         # Patient database
-│   │   ├── follow-ups/       # Follow-up management
-│   │   ├── analytics/        # Analytics charts
-│   │   └── settings/         # Clinic settings
-│   └── login/                # Redirects to /sign-in
-├── patient/
-│   ├── dashboard/            # Patient dashboard
-│   └── profile/              # Profile completion
-├── book/                     # Booking flow
-└── api/
-    └── queue/stream/         # SSE real-time queue stream
 
-components/
-├── AdminFrame.jsx            # Admin sidebar layout
-├── AdminQueueLive.jsx        # Live queue with SSE
-├── BookingFlow.jsx           # Multi-step booking wizard
-├── QueueLive.jsx             # Patient queue display
-├── AuthControls.jsx          # Clerk auth UI
-├── PatientProfileForm.jsx    # Profile form
-└── Charts.jsx                # Recharts analytics
+Listen for `user.created`, `user.updated`, and `user.deleted`.
 
-lib/
-├── auth.js                   # Clerk + DB user sync
-├── data.js                   # All DB queries
-├── prisma.js                 # Prisma client singleton
-├── queue-events.js           # PostgreSQL LISTEN/NOTIFY
-├── time.js                   # Date/time utilities
-├── validation.js             # Input validation
-└── whatsapp.js               # WhatsApp message templates
+## Gemini Setup
 
-app/actions.js                # All server actions
-proxy.js                      # Clerk middleware (Next.js 16)
-prisma/schema.prisma          # Database schema
+Set `GEMINI_API_KEY` in `.env.local` and in Vercel environment variables. The AI assistant route never sends this key to the client. If Gemini is unavailable, the assistant falls back to the normal booking flow message.
+
+## Production Checks
+
+```bash
+npm run lint
+npm run build
+npm run db:push
+npm run db:seed
 ```
+
+If `prisma generate` fails locally on Windows with an `EPERM rename` against `query_engine-windows.dll.node`, stop any running `next dev` or Node process that is holding Prisma's engine DLL, then rerun the command.
+
+## Vercel Deployment
+
+1. Push the repo to GitHub.
+2. Import the project in Vercel.
+3. Add every required environment variable.
+4. Use the default build command from `vercel.json`: `prisma generate && next build`.
+5. Run `npm run db:push` and `npm run db:seed` against the production database before first use.
+6. Configure the Clerk webhook for the deployed domain.
+
+## Troubleshooting
+
+- Unauthenticated patient route redirects to `/patient/login`.
+- Missing patient profile redirects to `/patient/profile`.
+- Existing profiles are recovered by Clerk user id first, then by signed-in email.
+- Patient users cannot access admin pages.
+- Admin pages require the local `calenzo_admin_session` cookie.
+- Queue pages use SSE and also refresh periodically.
