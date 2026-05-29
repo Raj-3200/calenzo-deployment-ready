@@ -2,29 +2,31 @@
 
 import { useEffect, useRef, useState } from "react";
 import { Bot, Loader2, MessageCircle, Send, X } from "lucide-react";
+import { useLanguage } from "@/components/LanguageProvider";
+import { ASSISTANT_COPY, sectionCopy } from "@/lib/i18n";
 import { Button, cn } from "@/components/ui";
 
-const initialReply =
-  "Please choose your language:\n1. English\n2. हिंदी\n3. मराठी";
-
 export function AIAssistant({ defaultOpen = false }) {
+  const { language } = useLanguage();
+  const copy = sectionCopy(ASSISTANT_COPY, language);
   const [open, setOpen] = useState(defaultOpen);
-  const [messages, setMessages] = useState([
-    { role: "assistant", content: initialReply },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState(null);
   const [currentStep, setCurrentStep] = useState("ASK_LANGUAGE");
   const [structuredData, setStructuredData] = useState({});
   const [loading, setLoading] = useState(false);
   const scrollRef = useRef(null);
+  const visibleMessages = messages.length
+    ? messages
+    : [{ role: "assistant", content: copy.initial }];
 
   useEffect(() => {
     scrollRef.current?.scrollTo({
       top: scrollRef.current.scrollHeight,
       behavior: "smooth",
     });
-  }, [messages, open]);
+  }, [copy.initial, messages, open]);
 
   async function sendMessage(event) {
     event?.preventDefault();
@@ -32,7 +34,10 @@ export function AIAssistant({ defaultOpen = false }) {
     if (!text || loading) return;
 
     setInput("");
-    setMessages((items) => [...items, { role: "user", content: text }]);
+    const baseMessages = messages.length
+      ? messages
+      : [{ role: "assistant", content: copy.initial }];
+    setMessages([...baseMessages, { role: "user", content: text }]);
     setLoading(true);
 
     try {
@@ -41,22 +46,20 @@ export function AIAssistant({ defaultOpen = false }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: text,
-          selectedLanguage,
+          selectedLanguage: selectedLanguage || language,
           currentStep,
           structuredData,
         }),
       });
       const data = await response.json();
-      setSelectedLanguage(data.selectedLanguage || selectedLanguage);
+      setSelectedLanguage(data.selectedLanguage || selectedLanguage || language);
       setCurrentStep(data.nextStep || currentStep);
       setStructuredData(data.structuredData || {});
       setMessages((items) => [
         ...items,
         {
           role: "assistant",
-          content:
-            data.reply ||
-            "Assistant is temporarily unavailable. You can continue booking using the normal form.",
+          content: data.reply || copy.unavailable,
           action: data.action,
         },
       ]);
@@ -65,8 +68,7 @@ export function AIAssistant({ defaultOpen = false }) {
         ...items,
         {
           role: "assistant",
-          content:
-            "Assistant is temporarily unavailable. You can continue booking using the normal form.",
+          content: copy.unavailable,
         },
       ]);
     } finally {
@@ -82,7 +84,7 @@ export function AIAssistant({ defaultOpen = false }) {
         className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-300/30 bg-violet-400/15 px-5 py-3 text-sm font-semibold text-violet-100 shadow-lg shadow-violet-950/30 transition hover:border-violet-200/60 hover:bg-violet-400/25"
       >
         <MessageCircle className="h-4 w-4" />
-        Ask AI Assistant
+        {copy.button}
       </button>
 
       {open ? (
@@ -94,10 +96,8 @@ export function AIAssistant({ defaultOpen = false }) {
                   <Bot className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="font-semibold text-white">Calenzo Assistant</p>
-                  <p className="text-xs text-slate-500">
-                    Real slots, real booking confirmation
-                  </p>
+                  <p className="font-semibold text-white">{copy.title}</p>
+                  <p className="text-xs text-slate-500">{copy.subtitle}</p>
                 </div>
               </div>
               <button
@@ -111,7 +111,7 @@ export function AIAssistant({ defaultOpen = false }) {
             </header>
 
             <div ref={scrollRef} className="flex-1 space-y-3 overflow-y-auto p-4">
-              {messages.map((message, index) => (
+              {visibleMessages.map((message, index) => (
                 <div
                   key={`${message.role}-${index}`}
                   className={cn(
@@ -125,32 +125,31 @@ export function AIAssistant({ defaultOpen = false }) {
                   {message.action === "SHOW_PROFILE_LINK" ? (
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button href="/patient/register" size="sm">
-                        Create account
+                        {copy.createAccount}
                       </Button>
                       <Button href="/patient/profile" variant="secondary" size="sm">
-                        Complete profile
+                        {copy.completeProfile}
                       </Button>
                     </div>
                   ) : null}
                   {message.action === "REQUIRE_SIGN_IN" ? (
                     <div className="mt-3">
                       <Button href="/patient/login" size="sm">
-                        Sign in
+                        {copy.signIn}
                       </Button>
                     </div>
                   ) : null}
-                  {message.action === "SHOW_CONFIRMATION" &&
-                  structuredData?.appointmentId ? (
+                  {message.action === "SHOW_CONFIRMATION" && structuredData?.appointmentId ? (
                     <div className="mt-3 flex flex-wrap gap-2">
                       <Button href={`/ticket/${structuredData.appointmentId}`} size="sm">
-                        View ticket
+                        {copy.viewTicket}
                       </Button>
                       <Button
                         href={`/queue/${structuredData.appointmentId}`}
                         variant="secondary"
                         size="sm"
                       >
-                        Live queue
+                        {copy.liveQueue}
                       </Button>
                     </div>
                   ) : null}
@@ -159,7 +158,7 @@ export function AIAssistant({ defaultOpen = false }) {
               {loading ? (
                 <div className="inline-flex items-center gap-2 rounded-2xl border border-slate-800 bg-slate-900 px-4 py-3 text-sm text-slate-300">
                   <Loader2 className="h-4 w-4 animate-spin text-sky-300" />
-                  Thinking
+                  {copy.thinking}
                 </div>
               ) : null}
             </div>
@@ -169,7 +168,7 @@ export function AIAssistant({ defaultOpen = false }) {
                 <input
                   value={input}
                   onChange={(event) => setInput(event.target.value)}
-                  placeholder="Type 1, 2, 3 or your answer..."
+                  placeholder={copy.placeholder}
                   className="min-w-0 flex-1 bg-transparent text-sm text-white outline-none placeholder:text-slate-600"
                 />
                 <button

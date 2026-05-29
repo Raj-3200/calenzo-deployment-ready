@@ -1,3 +1,5 @@
+import { LanguageProvider } from '@/components/LanguageProvider'
+
 export function Providers({ children }) {
-  return children
+  return <LanguageProvider>{children}</LanguageProvider>
 }
