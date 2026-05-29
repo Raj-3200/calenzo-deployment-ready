@@ -1,12 +1,17 @@
 import { Prisma } from '@prisma/client'
-import { NextResponse } from 'next/server'
+import { after, NextResponse } from 'next/server'
 import { z } from 'zod'
 import { getSession, isAdminRole } from '@/lib/auth'
 import { ACTIVE_APPOINTMENT_STATUSES, ACTIVE_QUEUE_STATUSES, appointmentDuration, generateAvailableSlots } from '@/lib/data'
 import { prisma } from '@/lib/prisma'
 import { notifyQueueRefresh, publishQueueRefresh } from '@/lib/queue-events'
 import { calculateArrivalWindow, dateFromInput, timeFromInput, timeToMinutes } from '@/lib/time'
-import { confirmationMessage } from '@/lib/whatsapp'
+import {
+  confirmationMessage,
+  notificationSentAtFromDelivery,
+  notificationStatusFromDelivery,
+  sendWhatsAppMessage,
+} from '@/lib/whatsapp'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -156,7 +161,8 @@ export async function POST(req) {
         },
       })
 
-      await tx.notification.create({
+      const notificationMessage = confirmationMessage({ clinic, patient, appointment, service })
+      const notification = await tx.notification.create({
         data: {
           clinicId: clinic.id,
           patientId: patient.id,
@@ -164,17 +170,36 @@ export async function POST(req) {
           type: 'confirmation',
           channel: 'whatsapp',
           recipient: patient.phone,
-          message: confirmationMessage({ clinic, patient, appointment, service }),
-          status: 'ready',
+          message: notificationMessage,
+          status: 'pending',
         },
       })
 
       await notifyQueueRefresh(tx, clinic.id)
 
-      return { appointment, tokenNumber }
+      return { appointment, tokenNumber, notificationId: notification.id, notificationMessage }
     }, TRANSACTION_OPTIONS)
 
     publishQueueRefresh()
+
+    after(async () => {
+      const delivery = await sendWhatsAppMessage({
+        to: patient.phone,
+        message: result.notificationMessage,
+      })
+
+      try {
+        await prisma.notification.update({
+          where: { id: result.notificationId },
+          data: {
+            status: notificationStatusFromDelivery(delivery),
+            sentAt: notificationSentAtFromDelivery(delivery),
+          },
+        })
+      } catch (error) {
+        console.error('Could not update WhatsApp notification delivery status:', error)
+      }
+    })
 
     return NextResponse.json({
       appointment: result.appointment,

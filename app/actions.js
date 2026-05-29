@@ -3,6 +3,7 @@
 import { Prisma } from '@prisma/client'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
+import { after } from 'next/server'
 import { z } from 'zod'
 import { getSession, isAdminRole } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
@@ -25,7 +26,13 @@ import {
   todayInput,
 } from '@/lib/time'
 import { isDatabaseUuid } from '@/lib/validation'
-import { confirmationMessage, delayMessage } from '@/lib/whatsapp'
+import {
+  confirmationMessage,
+  delayMessage,
+  notificationSentAtFromDelivery,
+  notificationStatusFromDelivery,
+  sendWhatsAppMessage,
+} from '@/lib/whatsapp'
 
 const TRANSACTION_OPTIONS = {
   maxWait: 10000,
@@ -128,6 +135,34 @@ function appointmentErrorMessage(error) {
   return message || 'Could not create appointment.'
 }
 
+async function createAndSendWhatsAppNotification(data) {
+  const notification = await prisma.notification.create({
+    data: {
+      ...data,
+      status: 'pending',
+    },
+  })
+
+  const delivery = await sendWhatsAppMessage({
+    to: data.recipient,
+    message: data.message,
+  })
+
+  try {
+    await prisma.notification.update({
+      where: { id: notification.id },
+      data: {
+        status: notificationStatusFromDelivery(delivery),
+        sentAt: notificationSentAtFromDelivery(delivery),
+      },
+    })
+  } catch (error) {
+    console.error('Could not update WhatsApp notification delivery status:', error)
+  }
+
+  return { notification, delivery }
+}
+
 async function createAppointmentSideEffects({
   clinic,
   patient,
@@ -142,17 +177,14 @@ async function createAppointmentSideEffects({
 }) {
   const notificationMessage = confirmationMessage({ clinic, patient, appointment, service })
   const tasks = [
-    prisma.notification.create({
-      data: {
-        clinicId: clinic.id,
-        patientId: patient.id,
-        appointmentId: appointment.id,
-        type: 'confirmation',
-        channel: 'whatsapp',
-        recipient: patient.phone,
-        message: notificationMessage,
-        status: 'ready',
-      },
+    createAndSendWhatsAppNotification({
+      clinicId: clinic.id,
+      patientId: patient.id,
+      appointmentId: appointment.id,
+      type: 'confirmation',
+      channel: 'whatsapp',
+      recipient: patient.phone,
+      message: notificationMessage,
     }),
     audit(prisma, {
       clinicId: clinic.id,
@@ -187,11 +219,17 @@ async function createAppointmentSideEffects({
 }
 
 function scheduleAppointmentSideEffects(payload) {
-  setTimeout(() => {
+  const task = () => {
     void createAppointmentSideEffects(payload).catch((error) => {
       console.error('Appointment side effects failed:', error)
     })
-  }, 0)
+  }
+
+  try {
+    after(task)
+  } catch {
+    setTimeout(task, 0)
+  }
 }
 
 async function createAppointmentInternal({
