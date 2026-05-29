@@ -21,10 +21,14 @@
 
   html {
     scroll-behavior: smooth;
+    width: 100%;
+    overflow-x: hidden;
   }
 
   body {
     min-width: 320px;
+    width: 100%;
+    overflow-x: hidden;
     margin: 0;
     color: #f8fafc;
     background:
@@ -48,6 +52,10 @@
   textarea,
   select {
     font: inherit;
+  }
+
+  svg {
+    flex-shrink: 0;
   }
 
   ::selection {

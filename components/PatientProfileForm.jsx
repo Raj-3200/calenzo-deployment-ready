@@ -22,9 +22,9 @@ export function PatientProfileForm({ action, email, defaultValues, error, isEdit
   return (
     <div className="mx-auto w-full max-w-2xl">
       {/* Header */}
-      <div className="mb-8">
+      <div className="mb-6 sm:mb-8">
         <p className="text-sm font-semibold text-sky-300">{isEdit ? 'Edit your details' : 'Almost there!'}</p>
-        <h1 className="mt-2 text-3xl font-bold text-white">
+        <h1 className="mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl">
           {isEdit ? 'Update your patient profile' : 'Complete your patient profile'}
         </h1>
         <p className="mt-2 text-sm leading-6 text-slate-400">

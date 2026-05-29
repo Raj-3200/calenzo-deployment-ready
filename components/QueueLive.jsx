@@ -38,15 +38,15 @@ export function QueueLive({ initialSnapshot, appointmentId }) {
   const service = serviceDisplay(appointment?.service, language)
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <Card className="p-6">
+    <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_360px]">
+      <Card className="min-w-0 p-4 sm:p-6">
         <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
           <div>
             <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-sky-400/20 bg-sky-400/10 px-3 py-1 text-sm text-sky-100">
               <Radio className="h-4 w-4" />
               {connected ? copy.connected : copy.reconnecting}
             </div>
-            <h1 className="text-3xl font-bold text-white">{copy.title}</h1>
+            <h1 className="text-2xl font-bold leading-tight text-white sm:text-3xl">{copy.title}</h1>
             <p className="mt-2 max-w-2xl text-sm leading-6 text-slate-400">{copy.description}</p>
           </div>
           <StatusBadge status={status} />
@@ -55,15 +55,15 @@ export function QueueLive({ initialSnapshot, appointmentId }) {
         <div className="mt-8 grid gap-4 md:grid-cols-3">
           <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-5">
             <p className="text-sm text-slate-400">{copy.currentToken}</p>
-            <p className="mt-3 text-5xl font-bold text-white">{snapshot?.currentToken ? `#${snapshot.currentToken}` : '-'}</p>
+            <p className="mt-3 text-4xl font-bold text-white sm:text-5xl">{snapshot?.currentToken ? `#${snapshot.currentToken}` : '-'}</p>
           </div>
           <div className="rounded-2xl border border-sky-400/30 bg-sky-400/10 p-5 queue-pulse">
             <p className="text-sm text-sky-100">{copy.yourToken}</p>
-            <p className="mt-3 text-5xl font-bold text-white">#{snapshot?.patientToken || '-'}</p>
+            <p className="mt-3 text-4xl font-bold text-white sm:text-5xl">#{snapshot?.patientToken || '-'}</p>
           </div>
           <div className="rounded-2xl border border-slate-800 bg-slate-950/50 p-5">
             <p className="text-sm text-slate-400">{copy.patientsBefore}</p>
-            <p className="mt-3 text-5xl font-bold text-white">{snapshot?.patientsBefore ?? 0}</p>
+            <p className="mt-3 text-4xl font-bold text-white sm:text-5xl">{snapshot?.patientsBefore ?? 0}</p>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ export function QueueLive({ initialSnapshot, appointmentId }) {
         </div>
       </Card>
 
-      <Card className="p-5">
+      <Card className="min-w-0 p-5">
         <p className="text-sm font-semibold text-sky-300">{copy.appointment}</p>
         <div className="mt-4 space-y-3 text-sm">
           <Info label={copy.patient} value={appointment?.patient?.fullName} />
@@ -102,9 +102,9 @@ export function QueueLive({ initialSnapshot, appointmentId }) {
 
 function Info({ label, value }) {
   return (
-    <div className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 px-3 py-2">
+    <div className="flex flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-950/40 px-3 py-2 sm:flex-row sm:items-center sm:justify-between sm:gap-3">
       <span className="text-slate-500">{label}</span>
-      <span className="text-right font-semibold text-white">{value || '-'}</span>
+      <span className="break-words font-semibold text-white sm:text-right">{value || '-'}</span>
     </div>
   )
 }
@@ -112,7 +112,7 @@ function Info({ label, value }) {
 export function MiniQueueStatus({ snapshot }) {
   return (
     <Card className="p-5">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <div>
           <p className="text-sm text-slate-400">Current token</p>
           <p className="mt-1 text-3xl font-bold text-white">{snapshot?.currentToken ? `#${snapshot.currentToken}` : '-'}</p>

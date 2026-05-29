@@ -10,8 +10,8 @@ export function AuthControls() {
   if (!isLoaded) {
     return (
       <div className="flex items-center gap-2">
-        <div className="h-9 w-20 animate-pulse rounded-2xl bg-slate-800" />
-        <div className="h-9 w-20 animate-pulse rounded-2xl bg-slate-800" />
+        <div className="h-9 w-10 animate-pulse rounded-2xl bg-slate-800 sm:w-20" />
+        <div className="h-9 w-10 animate-pulse rounded-2xl bg-slate-800 sm:w-20" />
       </div>
     )
   }
@@ -19,9 +19,9 @@ export function AuthControls() {
   if (isSignedIn) {
     return (
       <div className="flex items-center gap-2">
-        <Button href="/dashboard" variant="secondary" size="sm">
+        <Button href="/dashboard" variant="secondary" size="sm" title="My visits" aria-label="My visits">
           <CalendarCheck2 className="h-4 w-4" />
-          My visits
+          <span className="hidden sm:inline">My visits</span>
         </Button>
         <UserButton afterSignOutUrl="/" />
       </div>
@@ -30,13 +30,13 @@ export function AuthControls() {
 
   return (
     <div className="flex items-center gap-2">
-      <Button href="/patient/login" variant="secondary" size="sm">
+      <Button href="/patient/login" variant="secondary" size="sm" title="Sign in" aria-label="Sign in">
         <LogIn className="h-4 w-4" />
-        Sign in
+        <span className="hidden sm:inline">Sign in</span>
       </Button>
-      <Button href="/patient/register" size="sm">
+      <Button href="/patient/register" size="sm" title="Sign up" aria-label="Sign up">
         <UserPlus className="h-4 w-4" />
-        Sign up
+        <span className="hidden sm:inline">Sign up</span>
       </Button>
     </div>
   )

@@ -26,7 +26,7 @@ export default async function TicketPage({ params }) {
   })
 
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-8">
       <PatientTopbar />
       <div className="mx-auto max-w-5xl">
         <PageHeader
@@ -37,13 +37,13 @@ export default async function TicketPage({ params }) {
         />
 
         <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_320px]">
-          <Card className="ticket-print p-6 text-slate-950">
-            <div className="flex items-start justify-between gap-4 border-b border-slate-200 pb-5">
-              <div>
+          <Card className="ticket-print p-4 text-slate-950 sm:p-6">
+            <div className="flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-start sm:justify-between">
+              <div className="min-w-0">
                 <p className="text-sm font-semibold text-slate-500">{appointment.clinic.name}</p>
-                <h2 className="mt-2 text-3xl font-black">Appointment Ticket</h2>
+                <h2 className="mt-2 text-2xl font-black sm:text-3xl">Appointment Ticket</h2>
               </div>
-              <div className="rounded-2xl bg-slate-950 px-4 py-3 text-center text-white">
+              <div className="w-full rounded-2xl bg-slate-950 px-4 py-3 text-center text-white sm:w-auto">
                 <p className="text-xs text-slate-300">Token</p>
                 <p className="text-3xl font-black">#{appointment.tokenNumber}</p>
               </div>

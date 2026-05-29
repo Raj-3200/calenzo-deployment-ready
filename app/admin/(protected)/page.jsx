@@ -48,8 +48,8 @@ export default async function AdminDashboardPage() {
           {data.appointments.length ? (
             <div className="space-y-3">
               {data.appointments.slice(0, 7).map((appointment) => (
-                <div key={appointment.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-3">
-                  <div>
+                <div key={appointment.id} className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-3 sm:flex-row sm:items-center sm:justify-between">
+                  <div className="min-w-0">
                     <p className="font-semibold text-white">#{appointment.tokenNumber} {appointment.patient.fullName}</p>
                     <p className="text-sm text-slate-400">{formatTime(appointment.appointmentTime)} - {appointment.service?.title || 'Consultation'}</p>
                   </div>
@@ -67,7 +67,7 @@ export default async function AdminDashboardPage() {
               {data.followUps.map((followUp) => (
                 <div key={followUp.id} className="rounded-2xl border border-slate-800 bg-slate-950/40 p-3">
                   <div className="flex items-center justify-between gap-3">
-                    <p className="font-semibold text-white">{followUp.patient.fullName}</p>
+                    <p className="min-w-0 break-words font-semibold text-white">{followUp.patient.fullName}</p>
                     <Badge tone={followUp.priority === 'hot' ? 'red' : followUp.priority === 'warm' ? 'amber' : 'slate'}>{followUp.priority}</Badge>
                   </div>
                   <p className="mt-1 text-sm text-slate-400">Next: {followUp.nextFollowupDate ? formatDate(followUp.nextFollowupDate) : 'Not set'}</p>

@@ -6,7 +6,7 @@ export default async function ServicesPage() {
   const services = await getServices()
 
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-8">
       <div className="mx-auto max-w-5xl">
         <Button href="/" variant="ghost" className="mb-6"><ArrowLeft className="h-4 w-4" /> Back</Button>
         <PageHeader

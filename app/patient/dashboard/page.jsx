@@ -29,7 +29,7 @@ export default async function PatientDashboardPage() {
   if (!patient) redirect('/patient/profile')
 
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-8">
       <PatientTopbar />
       <div className="mx-auto max-w-6xl">
         <PageHeader
@@ -60,8 +60,8 @@ export default async function PatientDashboardPage() {
                   </div>
                   <div className="flex flex-wrap gap-2">
                     <StatusBadge status={appointment.status} />
-                    <Button href={`/ticket/${appointment.id}`} variant="secondary" size="sm">Ticket</Button>
-                    <Button href={`/queue/${appointment.id}`} variant="secondary" size="sm">Live queue</Button>
+                    <Button href={`/ticket/${appointment.id}`} variant="secondary" size="sm" className="flex-1 sm:flex-none">Ticket</Button>
+                    <Button href={`/queue/${appointment.id}`} variant="secondary" size="sm" className="flex-1 sm:flex-none">Live queue</Button>
                   </div>
                 </div>
               ))}

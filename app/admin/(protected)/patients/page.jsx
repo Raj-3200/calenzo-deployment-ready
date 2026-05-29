@@ -30,9 +30,9 @@ export default async function PatientsPage({ searchParams }) {
     <>
       <PageHeader eyebrow="Patients" title="Patient database" description="Search patients, review appointment history, no-shows, total visits, private notes, and follow-up state." />
       <Card className="mb-5 p-4">
-        <form className="flex gap-3">
+        <form className="flex flex-col gap-3 sm:flex-row">
           <div className="flex-1"><SearchBox defaultValue={q} placeholder="Search by patient name or phone" /></div>
-          <Button type="submit" variant="secondary">Search</Button>
+          <Button type="submit" variant="secondary" className="w-full sm:w-auto">Search</Button>
         </form>
       </Card>
 
@@ -57,8 +57,8 @@ export default async function PatientsPage({ searchParams }) {
                   {patient.appointments.length ? (
                     <div className="space-y-2">
                       {patient.appointments.map((appointment) => (
-                        <div key={appointment.id} className="flex items-center justify-between gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-3">
-                          <div>
+                        <div key={appointment.id} className="flex flex-col gap-3 rounded-2xl border border-slate-800 bg-slate-950/40 p-3 sm:flex-row sm:items-center sm:justify-between">
+                          <div className="min-w-0">
                             <p className="text-sm font-semibold text-white">#{appointment.tokenNumber} {appointment.service?.title || 'Consultation'}</p>
                             <p className="text-xs text-slate-500">{formatDate(appointment.appointmentDate)} at {formatTime(appointment.appointmentTime)}</p>
                           </div>

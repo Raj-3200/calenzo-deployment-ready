@@ -12,9 +12,9 @@ export function SignOutButton({ label = 'Sign out', className = '' }) {
   }
 
   return (
-    <Button as="button" variant="secondary" size="sm" onClick={handleSignOut} className={className}>
+    <Button as="button" variant="secondary" size="sm" onClick={handleSignOut} className={className} title={label} aria-label={label}>
       <LogOut className="h-4 w-4" />
-      {label}
+      <span className="hidden sm:inline">{label}</span>
     </Button>
   )
 }

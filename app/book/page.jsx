@@ -16,7 +16,7 @@ export default async function BookingPage() {
   const services = await getServices()
 
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-8">
       <PatientTopbar />
       <div className="mx-auto max-w-7xl">
         <BookingHeader />

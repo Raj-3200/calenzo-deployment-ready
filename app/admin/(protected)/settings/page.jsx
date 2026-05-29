@@ -9,7 +9,7 @@ export default async function SettingsPage() {
   return (
     <>
       <PageHeader eyebrow="Settings" title="Clinic settings" description="Manage clinic identity, working hours, appointment durations, lunch break, and communication details." />
-      <Card className="max-w-5xl p-6">
+      <Card className="max-w-5xl p-4 sm:p-6">
         <form action={saveSettingsAction} className="grid gap-4 md:grid-cols-2">
           <div>
             <Label>Clinic name</Label>
@@ -68,7 +68,7 @@ export default async function SettingsPage() {
             <Input name="slotDuration" type="number" min="5" defaultValue={clinic.slotDuration} />
           </div>
           <div className="md:col-span-2">
-            <Button type="submit" size="lg">Save clinic settings</Button>
+            <Button type="submit" size="lg" className="w-full sm:w-auto">Save clinic settings</Button>
           </div>
         </form>
       </Card>

@@ -13,7 +13,7 @@ export default async function WalkInsPage() {
         title="Add a patient without breaking the queue"
         description="Calenzo creates or reuses the patient, allocates the nearest valid slot, generates a token, and inserts the patient into today's live queue."
       />
-      <Card className="max-w-3xl p-6">
+      <Card className="max-w-3xl p-4 sm:p-6">
         <form action={walkInAction} className="grid gap-4 md:grid-cols-2">
           <div>
             <Label>Patient name</Label>
@@ -54,7 +54,7 @@ export default async function WalkInsPage() {
             <Textarea name="notes" placeholder="Internal note for doctor or receptionist" />
           </div>
           <div className="md:col-span-2">
-            <Button type="submit" size="lg"><UserPlus className="h-4 w-4" /> Generate walk-in token</Button>
+            <Button type="submit" size="lg" className="w-full sm:w-auto"><UserPlus className="h-4 w-4" /> Generate walk-in token</Button>
           </div>
         </form>
       </Card>

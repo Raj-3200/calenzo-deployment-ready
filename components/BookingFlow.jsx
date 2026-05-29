@@ -105,15 +105,17 @@ export function BookingFlow({ patient, services }) {
   ][step]
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_360px]">
-      <Card className="p-4 md:p-6">
-        <div className="mb-6 grid gap-2" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(0, 1fr))` }}>
-          {steps.map((label, index) => (
-            <div key={label} className="min-w-0">
-              <div className={cn('h-1.5 rounded-full', index <= step ? 'bg-sky-300' : 'bg-slate-800')} />
-              <p className={cn('mt-2 truncate text-xs', index === step ? 'text-sky-200' : 'text-slate-500')}>{label}</p>
-            </div>
-          ))}
+    <div className="grid min-w-0 gap-5 lg:grid-cols-[minmax(0,1fr)_360px] lg:gap-6">
+      <Card className="min-w-0 p-4 md:p-6">
+        <div className="-mx-1 mb-6 overflow-x-auto px-1 pb-1">
+          <div className="grid min-w-max gap-2 sm:min-w-0" style={{ gridTemplateColumns: `repeat(${steps.length}, minmax(76px, 1fr))` }}>
+            {steps.map((label, index) => (
+              <div key={label} className="min-w-0">
+                <div className={cn('h-1.5 rounded-full', index <= step ? 'bg-sky-300' : 'bg-slate-800')} />
+                <p className={cn('mt-2 truncate text-xs', index === step ? 'text-sky-200' : 'text-slate-500')}>{label}</p>
+              </div>
+            ))}
+          </div>
         </div>
 
         <AnimatePresence mode="wait">
@@ -191,11 +193,11 @@ export function BookingFlow({ patient, services }) {
                       className={cn('rounded-2xl border p-4 text-left transition hover:-translate-y-0.5', serviceId === service.id ? 'border-sky-300 bg-sky-300/10' : 'border-slate-700 bg-slate-950/40 hover:border-slate-500')}
                     >
                       <div className="flex items-start justify-between gap-3">
-                        <div>
+                        <div className="min-w-0">
                           <p className="font-semibold text-white">{serviceDisplay(service, language).title}</p>
                           <p className="mt-1 text-sm leading-6 text-slate-400">{serviceDisplay(service, language).description}</p>
                         </div>
-                        <Badge tone="sky">{service.duration} {copy.duration}</Badge>
+                        <Badge tone="sky" className="shrink-0">{service.duration} {copy.duration}</Badge>
                       </div>
                     </button>
                   ))}
@@ -288,9 +290,9 @@ export function BookingFlow({ patient, services }) {
                     [copy.time, time],
                     [copy.phone, patientForm.phone],
                   ].map(([label, value]) => (
-                    <div key={label} className="flex items-center justify-between rounded-2xl border border-slate-800 bg-slate-950/40 px-4 py-3">
+                    <div key={label} className="flex flex-col gap-1 rounded-2xl border border-slate-800 bg-slate-950/40 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
                       <span className="text-sm text-slate-400">{label}</span>
-                      <span className="text-sm font-semibold text-white">{value}</span>
+                      <span className="break-words text-sm font-semibold text-white sm:text-right">{value}</span>
                     </div>
                   ))}
                   {error ? <p className="rounded-2xl border border-red-400/20 bg-red-400/10 p-3 text-sm text-red-200">{error}</p> : null}
@@ -300,16 +302,16 @@ export function BookingFlow({ patient, services }) {
           </motion.div>
         </AnimatePresence>
 
-        <div className="mt-8 flex items-center justify-between gap-3">
-          <Button variant="secondary" type="button" disabled={step === 0} onClick={() => setStep((current) => Math.max(0, current - 1))}>
+        <div className="mt-8 grid grid-cols-2 gap-3">
+          <Button variant="secondary" type="button" disabled={step === 0} onClick={() => setStep((current) => Math.max(0, current - 1))} className="w-full">
             {copy.back}
           </Button>
           {step < steps.length - 1 ? (
-            <Button type="button" disabled={!canContinue || isPending} onClick={() => setStep((current) => Math.min(steps.length - 1, current + 1))}>
+            <Button type="button" disabled={!canContinue || isPending} onClick={() => setStep((current) => Math.min(steps.length - 1, current + 1))} className="w-full">
               {copy.continue}
             </Button>
           ) : (
-            <Button type="button" disabled={isPending} onClick={submit}>
+            <Button type="button" disabled={isPending} onClick={submit} className="w-full">
               {isPending ? copy.confirming : copy.confirmAppointment}
             </Button>
           )}
@@ -317,27 +319,27 @@ export function BookingFlow({ patient, services }) {
       </Card>
 
       <div className="space-y-4">
-        <Card className="p-5">
+        <Card className="min-w-0 p-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-200">
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-sky-400/10 text-sky-200">
               <UserRound className="h-5 w-5" />
             </div>
-            <div>
-              <p className="font-semibold text-white">{patientForm.fullName || copy.patient}</p>
-              <p className="text-sm text-slate-400">{patientForm.phone || copy.savedPhone}</p>
+            <div className="min-w-0">
+              <p className="truncate font-semibold text-white">{patientForm.fullName || copy.patient}</p>
+              <p className="truncate text-sm text-slate-400">{patientForm.phone || copy.savedPhone}</p>
             </div>
           </div>
         </Card>
-        <Card className="p-5">
+        <Card className="min-w-0 p-5">
           <div className="mb-4 flex items-center gap-3">
             <CalendarDays className="h-5 w-5 text-sky-200" />
             <p className="font-semibold text-white">{copy.summaryTitle}</p>
           </div>
           <div className="space-y-3 text-sm">
-            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.type}</span><span className="text-white">{appointmentTypeSummary}</span></div>
-            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.service}</span><span className="text-right text-white">{selectedServiceDisplay.title || copy.selectService}</span></div>
-            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.date}</span><span className="text-white">{date}</span></div>
-            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.time}</span><span className="text-white">{time || copy.selectSlot}</span></div>
+            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.type}</span><span className="break-words text-right text-white">{appointmentTypeSummary}</span></div>
+            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.service}</span><span className="break-words text-right text-white">{selectedServiceDisplay.title || copy.selectService}</span></div>
+            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.date}</span><span className="break-words text-right text-white">{date}</span></div>
+            <div className="flex justify-between gap-3 text-slate-400"><span>{copy.time}</span><span className="break-words text-right text-white">{time || copy.selectSlot}</span></div>
           </div>
           <div className="mt-5 rounded-2xl border border-sky-400/20 bg-sky-400/10 p-3 text-sm leading-6 text-sky-100">
             {copy.tokenNote}

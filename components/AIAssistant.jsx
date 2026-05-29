@@ -81,15 +81,15 @@ export function AIAssistant({ defaultOpen = false }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center justify-center gap-2 rounded-2xl border border-violet-300/30 bg-violet-400/15 px-5 py-3 text-sm font-semibold text-violet-100 shadow-lg shadow-violet-950/30 transition hover:border-violet-200/60 hover:bg-violet-400/25"
+        className="inline-flex min-h-11 w-full max-w-full items-center justify-center gap-2 rounded-2xl border border-violet-300/30 bg-violet-400/15 px-4 py-3 text-center text-sm font-semibold leading-tight text-violet-100 shadow-lg shadow-violet-950/30 transition hover:border-violet-200/60 hover:bg-violet-400/25 sm:w-auto sm:px-5"
       >
         <MessageCircle className="h-4 w-4" />
         {copy.button}
       </button>
 
       {open ? (
-        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 px-3 py-4 backdrop-blur-sm sm:items-center">
-          <section className="flex h-[min(720px,92vh)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl shadow-black/50">
+        <div className="fixed inset-0 z-50 flex items-end justify-center bg-slate-950/70 px-2 py-3 backdrop-blur-sm sm:items-center sm:px-3 sm:py-4">
+          <section className="flex h-[min(720px,94dvh)] w-full max-w-lg flex-col overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-2xl shadow-black/50">
             <header className="flex items-center justify-between border-b border-slate-800 px-4 py-3">
               <div className="flex items-center gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-2xl bg-sky-300 text-slate-950">
@@ -97,7 +97,7 @@ export function AIAssistant({ defaultOpen = false }) {
                 </div>
                 <div>
                   <p className="font-semibold text-white">{copy.title}</p>
-                  <p className="text-xs text-slate-500">{copy.subtitle}</p>
+                  <p className="max-w-[220px] truncate text-xs text-slate-500 sm:max-w-none sm:whitespace-normal">{copy.subtitle}</p>
                 </div>
               </div>
               <button

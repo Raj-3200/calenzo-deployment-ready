@@ -16,7 +16,7 @@ export default async function OnboardingPage({ searchParams }) {
   if (patient) redirect('/book')
 
   return (
-    <main className="min-h-screen px-4 py-10">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-10">
       <PatientTopbar />
       <PatientProfileForm
         action={savePatientProfileAction}

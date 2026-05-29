@@ -56,7 +56,7 @@ export default async function AppointmentsPage({ searchParams }) {
             <option value="new">New</option>
             <option value="follow_up">Follow-up</option>
           </Select>
-          <Button type="submit" variant="secondary">Filter</Button>
+          <Button type="submit" variant="secondary" className="w-full">Filter</Button>
         </form>
       </Card>
 

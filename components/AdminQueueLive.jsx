@@ -25,12 +25,12 @@ export function AdminQueueLive({ initialSnapshot }) {
   }, [])
 
   return (
-    <div className="grid gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
+    <div className="grid min-w-0 gap-5 xl:grid-cols-[360px_minmax(0,1fr)]">
       <div className="space-y-5">
         <Card className="p-5">
           <p className="text-sm text-slate-400">Current token</p>
           <div className="mt-3 flex items-end justify-between gap-4">
-            <p className="text-6xl font-bold text-white">{snapshot?.currentToken ? `#${snapshot.currentToken}` : '-'}</p>
+            <p className="text-5xl font-bold text-white sm:text-6xl">{snapshot?.currentToken ? `#${snapshot.currentToken}` : '-'}</p>
             <Badge tone={snapshot?.delayMinutes ? 'amber' : 'green'}>
               {snapshot?.delayMinutes ? `${snapshot.delayMinutes} min delay` : 'On time'}
             </Badge>
@@ -40,7 +40,7 @@ export function AdminQueueLive({ initialSnapshot }) {
 
         <Card className="p-5">
           <p className="font-semibold text-white">Delay control</p>
-          <form action={addDelayAction} className="mt-4 flex gap-2">
+          <form action={addDelayAction} className="mt-4 flex flex-col gap-2 sm:flex-row">
             <input name="minutes" type="number" min="1" defaultValue="15" className="h-11 w-full rounded-2xl border border-slate-700 bg-slate-950/50 px-3 text-sm text-white outline-none focus:border-sky-300" />
             <Button type="submit" variant="secondary">Add</Button>
           </form>
@@ -75,13 +75,13 @@ function QueueRow({ item }) {
   return (
     <div className="rounded-2xl border border-slate-800 bg-slate-950/45 p-4">
       <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3">
+        <div className="flex min-w-0 items-center gap-3">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-400/10 text-lg font-bold text-sky-100">
             #{item.tokenNumber}
           </div>
-          <div>
-            <p className="font-semibold text-white">{item.patient?.fullName}</p>
-            <p className="text-sm text-slate-400">{item.appointment?.service?.title || 'Consultation'} - {item.estimatedWaitTime || 0} min wait</p>
+          <div className="min-w-0">
+            <p className="truncate font-semibold text-white">{item.patient?.fullName}</p>
+            <p className="truncate text-sm text-slate-400">{item.appointment?.service?.title || 'Consultation'} - {item.estimatedWaitTime || 0} min wait</p>
           </div>
         </div>
         <div className="flex flex-wrap items-center gap-2">

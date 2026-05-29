@@ -15,7 +15,7 @@ export default async function QueueStatusPage({ params }) {
   const snapshot = await getQueueSnapshot({ appointmentId, clinicId: appointment.clinicId })
 
   return (
-    <main className="min-h-screen px-4 py-8">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-8">
       <PatientTopbar />
       <div className="mx-auto max-w-7xl">
         <QueueLive initialSnapshot={snapshot} appointmentId={appointmentId} />

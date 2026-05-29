@@ -14,9 +14,9 @@ export function AdminSignOutButton() {
   }
 
   return (
-    <Button as="button" variant="secondary" size="sm" onClick={handleSignOut}>
+    <Button as="button" variant="secondary" size="sm" onClick={handleSignOut} title="Sign out" aria-label="Sign out">
       <LogOut className="h-4 w-4" />
-      Sign out
+      <span className="hidden sm:inline">Sign out</span>
     </Button>
   );
 }

@@ -21,7 +21,7 @@ export default async function PatientProfilePage({ searchParams }) {
   const error = params?.error || ''
 
   return (
-    <main className="min-h-screen px-4 py-10">
+    <main className="min-h-screen px-3 py-5 sm:px-4 sm:py-10">
       <PatientTopbar />
       <div className="mx-auto max-w-2xl">
         <PatientProfileForm

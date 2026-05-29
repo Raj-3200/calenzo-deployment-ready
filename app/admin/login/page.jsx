@@ -40,8 +40,8 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-4 py-10 text-slate-100">
-      <div className="w-full max-w-md rounded-[32px] border border-slate-800/90 bg-slate-900/95 p-8 shadow-2xl shadow-slate-950/40">
+    <main className="flex min-h-screen items-center justify-center bg-slate-950 px-3 py-5 text-slate-100 sm:px-4 sm:py-10">
+      <div className="w-full max-w-md rounded-[28px] border border-slate-800/90 bg-slate-900/95 p-5 shadow-2xl shadow-slate-950/40 sm:rounded-[32px] sm:p-8">
         <div className="mb-8 text-center">
           <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-3xl bg-sky-500/15 text-3xl font-semibold text-sky-300">
             C
