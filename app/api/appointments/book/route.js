@@ -7,6 +7,7 @@ import { prisma } from '@/lib/prisma'
 import { notifyQueueRefresh, publishQueueRefresh } from '@/lib/queue-events'
 import { calculateArrivalWindow, dateFromInput, timeFromInput, timeToMinutes } from '@/lib/time'
 import {
+  confirmationContentVariables,
   confirmationMessage,
   notificationSentAtFromDelivery,
   notificationStatusFromDelivery,
@@ -162,6 +163,7 @@ export async function POST(req) {
       })
 
       const notificationMessage = confirmationMessage({ clinic, patient, appointment, service })
+      const contentVariables = confirmationContentVariables({ clinic, patient, appointment, service })
       const notification = await tx.notification.create({
         data: {
           clinicId: clinic.id,
@@ -177,7 +179,7 @@ export async function POST(req) {
 
       await notifyQueueRefresh(tx, clinic.id)
 
-      return { appointment, tokenNumber, notificationId: notification.id, notificationMessage }
+      return { appointment, tokenNumber, notificationId: notification.id, notificationMessage, contentVariables }
     }, TRANSACTION_OPTIONS)
 
     publishQueueRefresh()
@@ -186,6 +188,7 @@ export async function POST(req) {
       const delivery = await sendWhatsAppMessage({
         to: patient.phone,
         message: result.notificationMessage,
+        contentVariables: result.contentVariables,
       })
 
       try {

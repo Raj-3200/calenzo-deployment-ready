@@ -27,6 +27,7 @@ import {
 } from '@/lib/time'
 import { isDatabaseUuid } from '@/lib/validation'
 import {
+  confirmationContentVariables,
   confirmationMessage,
   delayMessage,
   notificationSentAtFromDelivery,
@@ -136,9 +137,10 @@ function appointmentErrorMessage(error) {
 }
 
 async function createAndSendWhatsAppNotification(data) {
+  const { contentVariables, ...notificationData } = data
   const notification = await prisma.notification.create({
     data: {
-      ...data,
+      ...notificationData,
       status: 'pending',
     },
   })
@@ -146,6 +148,7 @@ async function createAndSendWhatsAppNotification(data) {
   const delivery = await sendWhatsAppMessage({
     to: data.recipient,
     message: data.message,
+    contentVariables,
   })
 
   try {
@@ -176,6 +179,7 @@ async function createAppointmentSideEffects({
   tokenNumber,
 }) {
   const notificationMessage = confirmationMessage({ clinic, patient, appointment, service })
+  const contentVariables = confirmationContentVariables({ clinic, patient, appointment, service })
   const tasks = [
     createAndSendWhatsAppNotification({
       clinicId: clinic.id,
@@ -185,6 +189,7 @@ async function createAppointmentSideEffects({
       channel: 'whatsapp',
       recipient: patient.phone,
       message: notificationMessage,
+      contentVariables,
     }),
     audit(prisma, {
       clinicId: clinic.id,
