@@ -47,11 +47,12 @@ DEFAULT_CLINIC_ID=00000000-0000-0000-0000-000000000001
 ADMIN_EMAIL=admin@calenzo.health
 ADMIN_PASSWORD=Admin1234!
 ADMIN_ROLE=OWNER
+ADMIN_SESSION_SECRET=
 
 GEMINI_API_KEY=
 ```
 
-Do not expose `CLERK_SECRET_KEY` or `GEMINI_API_KEY` to the browser.
+Do not expose `CLERK_SECRET_KEY`, `ADMIN_SESSION_SECRET`, or `GEMINI_API_KEY` to the browser.
 
 ## Local Setup
 
@@ -82,6 +83,8 @@ npm run admin:create -- --email admin@calenzo.health --password "Admin1234!" --r
 ```
 
 Supported admin roles are `OWNER`, `ADMIN`, `DOCTOR`, `RECEPTIONIST`, and `STAFF`.
+
+Set `ADMIN_SESSION_SECRET` to a long random value in production so admin session cookies can be signed securely.
 
 ## Clerk Setup
 

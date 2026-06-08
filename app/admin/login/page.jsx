@@ -3,11 +3,9 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
-const DEFAULT_ADMIN_EMAIL = "admin@calenzo.health";
-
 export default function AdminLoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState(DEFAULT_ADMIN_EMAIL);
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -48,7 +46,7 @@ export default function AdminLoginPage() {
           </div>
           <h1 className="text-3xl font-semibold">Admin sign in</h1>
           <p className="mt-2 text-sm text-slate-400">
-            Sign in with the admin account seeded in Prisma.
+            Sign in with your admin credentials.
           </p>
         </div>
 
@@ -103,16 +101,6 @@ export default function AdminLoginPage() {
           </button>
         </form>
 
-        <div className="mt-8 rounded-3xl border border-slate-800 bg-slate-950/80 p-4 text-sm text-slate-500">
-          <p>
-            Seeded admin:{" "}
-            <span className="text-slate-200">{DEFAULT_ADMIN_EMAIL}</span>
-          </p>
-          <p className="mt-1">
-            Default password:{" "}
-            <span className="text-slate-200">Admin1234!</span>
-          </p>
-        </div>
       </div>
     </main>
   );

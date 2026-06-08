@@ -1,6 +1,7 @@
 import { saveSettingsAction } from '@/app/actions'
 import { getClinic } from '@/lib/data'
 import { timeToInput } from '@/lib/time'
+import { ActionForm } from '@/components/ActionForm'
 import { Button, Card, Input, Label, PageHeader, Textarea } from '@/components/ui'
 
 export default async function SettingsPage() {
@@ -10,7 +11,7 @@ export default async function SettingsPage() {
     <>
       <PageHeader eyebrow="Settings" title="Clinic settings" description="Manage clinic identity, working hours, appointment durations, lunch break, and communication details." />
       <Card className="max-w-5xl p-4 sm:p-6">
-        <form action={saveSettingsAction} className="grid gap-4 md:grid-cols-2">
+        <ActionForm action={saveSettingsAction} successMessage="Clinic settings saved." className="grid gap-4 md:grid-cols-2">
           <div>
             <Label>Clinic name</Label>
             <Input name="name" defaultValue={clinic.name} />
@@ -70,7 +71,7 @@ export default async function SettingsPage() {
           <div className="md:col-span-2">
             <Button type="submit" size="lg" className="w-full sm:w-auto">Save clinic settings</Button>
           </div>
-        </form>
+        </ActionForm>
       </Card>
     </>
   )

@@ -3,8 +3,23 @@ import {
   verifyAdminCredentials,
   createAdminSessionCookieValue,
 } from "@/lib/auth";
+import { rateLimit } from "@/lib/rate-limit";
 
 export async function POST(request) {
+  const ip =
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
+  const limit = rateLimit({
+    key: `admin-login:${ip}`,
+    windowMs: 60000,
+    maxRequests: 5,
+  });
+  if (!limit.allowed) {
+    return NextResponse.json(
+      { ok: false, error: "Too many login attempts. Please wait a minute." },
+      { status: 429, headers: { "Retry-After": String(limit.retryAfter) } },
+    );
+  }
+
   const body = await request.json();
   const email = String(body.email || "")
     .trim()

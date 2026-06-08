@@ -1,4 +1,5 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server";
+import { parseAdminSessionCookie } from "@/lib/auth";
 
 const isPublicRoute = createRouteMatcher([
   "/",
@@ -18,26 +19,35 @@ const isPublicRoute = createRouteMatcher([
   "/api/ai/chat(.*)",
   "/api/webhooks(.*)",
   "/api/queue/stream(.*)",
-  "/api/admin/(.*)",
+  "/api/admin/login(.*)",
 ]);
 
 export default clerkMiddleware(async (auth, request) => {
   const pathname = request.nextUrl.pathname;
 
-  // Always allow public routes
   if (isPublicRoute(request)) {
     return;
   }
 
-  // Allow admin routes if there's an admin session cookie
   if (
-    (pathname === "/admin" || pathname.startsWith("/admin/")) &&
-    request.cookies.has("calenzo_admin_session")
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    pathname.startsWith("/api/admin/")
   ) {
-    return;
+    const cookieValue = request.cookies.get("calenzo_admin_session")?.value;
+    if (cookieValue) {
+      const payload = parseAdminSessionCookie(cookieValue);
+      if (payload) return;
+    }
+
+    if (pathname.startsWith("/api/admin/")) {
+      return new Response(
+        JSON.stringify({ ok: false, error: "Admin session required." }),
+        { status: 401, headers: { "Content-Type": "application/json" } },
+      );
+    }
   }
 
-  // Otherwise require Clerk authentication
   await auth.protect();
 });
 
